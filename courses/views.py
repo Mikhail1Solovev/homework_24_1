@@ -1,3 +1,5 @@
+from django.utils import timezone
+import datetime
 import logging
 from rest_framework import viewsets, generics
 from .models import Course, Lesson, Subscription
@@ -30,20 +32,30 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def update(self, request, *args, **kwargs):
-        response = super().update(request, *args, **kwargs)
         course = self.get_object()
-        # Отправка уведомления всем подписчикам об обновлении курса
-        for user in course.subscribers.all():
-            send_course_update_email.delay(user.email, course.title)
-        return response
+        # Проверка на то, что курс обновлялся более четырех часов назад
+        if (timezone.now() - course.last_updated) > datetime.timedelta(hours=4):
+            response = super().update(request, *args, **kwargs)
+            course = self.get_object()
+            # Отправка уведомления всем подписчикам об обновлении курса
+            for user in course.subscribers.all():
+                send_course_update_email.delay(user.email, course.title)
+            return response
+        else:
+            return Response({'detail': 'Курс обновлялся менее четырех часов назад, уведомления не отправлены.'}, status=400)
 
     def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
         course = self.get_object()
-        # Отправка уведомления всем подписчикам об обновлении курса
-        for user in course.subscribers.all():
-            send_course_update_email.delay(user.email, course.title)
-        return response
+        # Проверка на то, что курс обновлялся более четырех часов назад
+        if (timezone.now() - course.last_updated) > datetime.timedelta(hours=4):
+            response = super().partial_update(request, *args, **kwargs)
+            course = self.get_object()
+            # Отправка уведомления всем подписчикам об обновлении курса
+            for user in course.subscribers.all():
+                send_course_update_email.delay(user.email, course.title)
+            return response
+        else:
+            return Response({'detail': 'Курс обновлялся менее четырех часов назад, уведомления не отправлены.'}, status=400)
 
 
 class LessonListCreateView(generics.ListCreateAPIView):
