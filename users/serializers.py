@@ -11,16 +11,26 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        fields = (
+            'username',
+            'password',
+            'password2',
+            'email',
+            'first_name',
+            'last_name')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Пароли не совпадают."})
+            raise serializers.ValidationError(
+                {"password": "Пароли не совпадают."})
         return attrs
 
     def create(self, validated_data):
@@ -38,4 +48,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'date_joined']
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'date_joined']

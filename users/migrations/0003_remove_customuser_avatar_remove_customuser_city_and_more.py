@@ -28,33 +28,54 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customuser',
             name='address',
-            field=models.CharField(blank=True, max_length=255, verbose_name='Адрес'),
+            field=models.CharField(
+                blank=True,
+                max_length=255,
+                verbose_name='Адрес'),
         ),
         migrations.AddField(
             model_name='customuser',
             name='date_of_birth',
-            field=models.DateField(blank=True, null=True, verbose_name='Дата рождения'),
+            field=models.DateField(
+                blank=True, null=True, verbose_name='Дата рождения'),
         ),
         migrations.AddField(
             model_name='customuser',
             name='phone_number',
-            field=models.CharField(blank=True, max_length=15, verbose_name='Номер телефона'),
+            field=models.CharField(
+                blank=True,
+                max_length=15,
+                verbose_name='Номер телефона'),
         ),
         migrations.AlterField(
             model_name='customuser',
             name='email',
-            field=models.EmailField(blank=True, max_length=254, verbose_name='email address'),
+            field=models.EmailField(
+                blank=True,
+                max_length=254,
+                verbose_name='email address'),
         ),
         migrations.CreateModel(
             name='Payment',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('payment_date', models.DateField()),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('payment_method', models.CharField(choices=[('cash', 'Наличные'), ('transfer', 'Перевод на счет')], max_length=20)),
-                ('course', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='courses.course')),
-                ('lesson', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='courses.lesson')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('payment_method', models.CharField(choices=[
+                 ('cash', 'Наличные'), ('transfer', 'Перевод на счет')], max_length=20)),
+                ('course',
+                 models.ForeignKey(blank=True,
+                                   null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='courses.course')),
+                ('lesson',
+                 models.ForeignKey(blank=True,
+                                   null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   to='courses.lesson')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

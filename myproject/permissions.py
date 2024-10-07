@@ -8,7 +8,8 @@ class IsModerator(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and request.user.groups.filter(name='Moderators').exists()
+        return request.user and request.user.groups.filter(
+            name='Moderators').exists()
 
 
 class IsOwnerOrModerator(permissions.BasePermission):
@@ -27,7 +28,8 @@ class IsOwnerOrModerator(permissions.BasePermission):
             if course_id:
                 try:
                     course = Course.objects.get(id=course_id)
-                    return course.owner == request.user or request.user.groups.filter(name='Moderators').exists()
+                    return course.owner == request.user or request.user.groups.filter(
+                        name='Moderators').exists()
                 except Course.DoesNotExist:
                     return False
             return False
@@ -36,5 +38,7 @@ class IsOwnerOrModerator(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        # Разрешаем доступ, если пользователь является владельцем объекта или модератором
-        return obj.owner == request.user or request.user.groups.filter(name='Moderators').exists()
+        # Разрешаем доступ, если пользователь является владельцем объекта или
+        # модератором
+        return obj.owner == request.user or request.user.groups.filter(
+            name='Moderators').exists()

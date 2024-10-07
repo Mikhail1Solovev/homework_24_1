@@ -141,6 +141,7 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 CELERY_BEAT_SCHEDULE = {
     'deactivate_inactive_users': {
         'task': 'courses.tasks.deactivate_inactive_users',
-        'schedule': crontab(hour=0, minute=0),  # Запускается каждый день в полночь
+        # Запускается каждый день в полночь
+        'schedule': crontab(hour=0, minute=0),
     },
 }

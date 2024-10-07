@@ -11,12 +11,16 @@ User = get_user_model()
 class LessonCRUDTestCase(APITestCase):
     def setUp(self):
         # Создаём группу 'Moderators'
-        self.moderators_group, created = Group.objects.get_or_create(name='Moderators')
+        self.moderators_group, created = Group.objects.get_or_create(
+            name='Moderators')
 
         # Создаём пользователей
-        self.owner = User.objects.create_user(username='owner', password='password123')
-        self.moderator = User.objects.create_user(username='moderator', password='password123', is_staff=True)
-        self.other_user = User.objects.create_user(username='other', password='password123')
+        self.owner = User.objects.create_user(
+            username='owner', password='password123')
+        self.moderator = User.objects.create_user(
+            username='moderator', password='password123', is_staff=True)
+        self.other_user = User.objects.create_user(
+            username='other', password='password123')
 
         # Добавляем модератора в группу 'Moderators'
         self.moderators_group.user_set.add(self.moderator)
@@ -32,7 +36,8 @@ class LessonCRUDTestCase(APITestCase):
         self.lesson = Lesson.objects.create(
             title="Initial Lesson",
             content="Lesson Content",
-            video_link="https://www.youtube.com/watch?v=dQw4w9WgXcQ",  # Валидная ссылка на YouTube
+            # Валидная ссылка на YouTube
+            video_link="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             course=self.course,
             owner=self.owner
         )
@@ -49,7 +54,8 @@ class LessonCRUDTestCase(APITestCase):
         data = {
             'title': 'New Lesson',
             'content': 'New Content',
-            'video_link': 'https://www.youtube.com/watch?v=abcdefghijk',  # Валидная ссылка на YouTube
+            # Валидная ссылка на YouTube
+            'video_link': 'https://www.youtube.com/watch?v=abcdefghijk',
             'course': self.course.id
         }
         response = self.client.post(url, data, format='json')
@@ -66,7 +72,8 @@ class LessonCRUDTestCase(APITestCase):
         data = {
             'title': 'Unauthorized Lesson',
             'content': 'Should not be created',
-            'video_link': 'https://www.youtube.com/watch?v=abcdefghijk',  # Валидная ссылка на YouTube
+            # Валидная ссылка на YouTube
+            'video_link': 'https://www.youtube.com/watch?v=abcdefghijk',
             'course': self.course.id
         }
         response = self.client.post(url, data, format='json')
@@ -99,11 +106,14 @@ class LessonCRUDTestCase(APITestCase):
 class SubscriptionTestCase(APITestCase):
     def setUp(self):
         # Создаём группу 'Moderators' (если ещё не создана)
-        self.moderators_group, created = Group.objects.get_or_create(name='Moderators')
+        self.moderators_group, created = Group.objects.get_or_create(
+            name='Moderators')
 
         # Создаём пользователей
-        self.user = User.objects.create_user(username='subscriber', password='password123')
-        self.other_user = User.objects.create_user(username='other', password='password123')
+        self.user = User.objects.create_user(
+            username='subscriber', password='password123')
+        self.other_user = User.objects.create_user(
+            username='other', password='password123')
 
         # Создаём курс
         self.course = Course.objects.create(
@@ -128,7 +138,10 @@ class SubscriptionTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Подписка добавлена')
-        self.assertTrue(Subscription.objects.filter(user=self.other_user, course=self.course).exists())
+        self.assertTrue(
+            Subscription.objects.filter(
+                user=self.other_user,
+                course=self.course).exists())
 
     def test_unsubscribe_from_course(self):
         """
@@ -142,7 +155,10 @@ class SubscriptionTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Подписка удалена')
-        self.assertFalse(Subscription.objects.filter(user=self.other_user, course=self.course).exists())
+        self.assertFalse(
+            Subscription.objects.filter(
+                user=self.other_user,
+                course=self.course).exists())
 
     def test_subscribe_without_authentication(self):
         """

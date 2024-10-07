@@ -10,7 +10,15 @@ router.register(r'courses', CourseViewSet, basename='course')
 urlpatterns = [
     path('', include(router.urls)),
     path('subscribe/', SubscriptionView.as_view(), name='subscribe'),
-    path('lessons/', LessonListCreateView.as_view(), name='lesson-list'),  # <-- Маршрут для списка уроков
-    path('lessons/<int:pk>/', LessonDetailView.as_view(), name='lesson-detail'),
-    path('pay/', PaymentView.as_view(), name='payment'),  # Новый маршрут для Stripe оплаты
+    path(
+        'lessons/',
+        LessonListCreateView.as_view(),
+        name='lesson-list'),
+    # <-- Маршрут для списка уроков
+    path(
+        'lessons/<int:pk>/',
+        LessonDetailView.as_view(),
+        name='lesson-detail'),
+    # Новый маршрут для Stripe оплаты
+    path('pay/', PaymentView.as_view(), name='payment'),
 ]

@@ -58,11 +58,13 @@ class SubscriptionView(APIView):
             subscription = Subscription.objects.get(user=user, course=course)
             subscription.delete()
             message = 'Подписка удалена'
-            logger.info(f'Пользователь {user.email} отписался от курса {course.name}')
+            logger.info(
+                f'Пользователь {user.email} отписался от курса {course.name}')
         except Subscription.DoesNotExist:
             Subscription.objects.create(user=user, course=course)
             message = 'Подписка добавлена'
-            logger.info(f'Пользователь {user.email} подписался на курс {course.name}')
+            logger.info(
+                f'Пользователь {user.email} подписался на курс {course.name}')
 
         return Response({"message": message})
 
@@ -92,7 +94,9 @@ class PaymentView(APIView):
         # Создание сессии оплаты
         success_url = request.build_absolute_uri('/success/')
         cancel_url = request.build_absolute_uri('/cancel/')
-        checkout_url = create_stripe_checkout_session(price_id, success_url, cancel_url)
+        checkout_url = create_stripe_checkout_session(
+            price_id, success_url, cancel_url)
 
-        logger.info(f'Создана сессия оплаты для курса {course_name} пользователем {request.user.email}')
+        logger.info(
+            f'Создана сессия оплаты для курса {course_name} пользователем {request.user.email}')
         return Response({"checkout_url": checkout_url})

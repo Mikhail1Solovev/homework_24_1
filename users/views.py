@@ -41,4 +41,5 @@ class ObtainTokenView(APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
-        return Response({'error': 'Неверные данные для входа'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Неверные данные для входа'},
+                        status=status.HTTP_401_UNAUTHORIZED)
