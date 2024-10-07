@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, render
 from rest_framework.pagination import PageNumberPagination
 from .services.stripe_service import create_stripe_product, create_stripe_price, create_stripe_checkout_session
+from .tasks import send_course_update_email
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,22 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        course = self.get_object()
+        # Отправка уведомления всем подписчикам об обновлении курса
+        for user in course.subscribers.all():
+            send_course_update_email.delay(user.email, course.title)
+        return response
+
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+        course = self.get_object()
+        # Отправка уведомления всем подписчикам об обновлении курса
+        for user in course.subscribers.all():
+            send_course_update_email.delay(user.email, course.title)
+        return response
 
 
 class LessonListCreateView(generics.ListCreateAPIView):
@@ -48,11 +65,13 @@ class LessonDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsOwnerOrModerator]
 
 
-class SubscriptionView(APIView):
+class SubscriptionToggleView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
-        user = request.user
         course_id = request.data.get('course_id')
         course = get_object_or_404(Course, id=course_id)
+        user = request.user
 
         try:
             subscription = Subscription.objects.get(user=user, course=course)
