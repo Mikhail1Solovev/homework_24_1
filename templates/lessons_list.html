@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список уроков</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Список уроков</h1>
+        <div class="mt-4">
+            {% if lessons %}
+                <ul class="list-group">
+                    {% for lesson in lessons %}
+                        <li class="list-group-item">
+                            <h5>{{ lesson.title }}</h5>
+                            <p>{{ lesson.content }}</p>
+                            <a href="{{ lesson.video_link }}" class="btn btn-info" target="_blank">Смотреть видео</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Нет доступных уроков.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
