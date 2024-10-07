@@ -2,7 +2,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+from celery.schedules import crontab
 
+# Загрузка переменных окружения
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,7 +89,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -96,7 +98,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# Настройки Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -106,7 +108,7 @@ REST_FRAMEWORK = {
     )
 }
 
-
+# Настройки JWT
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -123,12 +125,11 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-STRIPE_SECRET_KEY = "sk_test_51Q4OlIKDQWoYbnYXyq8S4uxkiFOIPUikkdkNrxHknJWmoJnS0sIVPn2UDGeVt1yiZH2l7Rzt9gkJyM3hTXDwfPZ800cVIwhm7E"
-STRIPE_PUBLIC_KEY = "pk_test_51Q4OlIKDQWoYbnYXyBpygAYgzcKcFEw9HIuWz42c9wWkAChKmJbEb5wTI1ednFIAmRz0elkULUYyvpCPri18VZhZ00238PyF9P"
+# Настройки Stripe
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', 'your-stripe-secret-key')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', 'your-stripe-public-key')
 
-# Celery Configuration
-import os
-
+# Настройки Celery и Celery Beat
 CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
@@ -136,12 +137,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
 
-# Celery Beat Schedule for periodic tasks
-from celery.schedules import crontab
-
 CELERY_BEAT_SCHEDULE = {
     'deactivate_inactive_users': {
-        'task': 'your_app.tasks.deactivate_inactive_users',
-        'schedule': crontab(hour=0, minute=0),  # Runs every day at midnight
+        'task': 'courses.tasks.deactivate_inactive_users',
+        'schedule': crontab(hour=0, minute=0),  # Запускается каждый день в полночь
     },
 }
